@@ -1,59 +1,51 @@
 import 'package:flutter/material.dart';
 import '../models/meal_model.dart';
+import '../services/favorites_service.dart';
 
 class MealCard extends StatelessWidget {
   final MealPreview meal;
   final VoidCallback onTap;
 
-  const MealCard({
-    super.key,
-    required this.meal,
-    required this.onTap,
-  });
+  MealCard({super.key, required this.meal, required this.onTap});
+
+  final FavoritesService _favoritesService = FavoritesService();
 
   @override
   Widget build(BuildContext context) {
+    final isFav = _favoritesService.isFavorite(meal.id);
+
     return Card(
-      elevation: 2,
-      margin: const EdgeInsets.all(4),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(8),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+        child: Stack(
           children: [
-            Expanded(
-              flex: 3,
-              child: ClipRRect(
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(8),
+            Column(
+              children: [
+                Expanded(
+                  child: Image.network(meal.thumbnail, fit: BoxFit.cover),
                 ),
-                child: Image.network(
-                  meal.thumbnail,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Container(
-                      color: Colors.grey[300],
-                      child: const Icon(Icons.restaurant, size: 40),
-                    );
-                  },
-                ),
-              ),
-            ),
-            Expanded(
-              flex: 1,
-              child: Padding(
-                padding: const EdgeInsets.all(8),
-                child: Text(
-                  meal.name,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
+                Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: Text(
+                    meal.name,
+                    maxLines: 2,
+                    textAlign: TextAlign.center,
                   ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.center,
                 ),
+              ],
+            ),
+            Positioned(
+              right: 4,
+              top: 4,
+              child: IconButton(
+                icon: Icon(
+                  isFav ? Icons.favorite : Icons.favorite_border,
+                  color: Colors.red,
+                ),
+                onPressed: () {
+                  _favoritesService.toggleFavorite(meal);
+                  (context as Element).markNeedsBuild();
+                },
               ),
             ),
           ],

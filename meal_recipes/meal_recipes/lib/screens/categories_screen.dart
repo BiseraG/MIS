@@ -3,7 +3,10 @@ import '../models/category_model.dart';
 import '../services/meal_service.dart';
 import '../widgets/category_card.dart';
 import 'meals_by_category_screen.dart'; 
+import '../services/notification_service.dart';
+import 'favorites_screen.dart';
 import 'random_meal_screen.dart'; 
+
 
 class CategoriesScreen extends StatefulWidget {
   const CategoriesScreen({super.key});
@@ -25,6 +28,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
     super.initState();
     _loadCategories();
     _searchController.addListener(_filterCategories);
+     NotificationService().init();
   }
 
   Future<void> _loadCategories() async {
@@ -73,18 +77,26 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
       appBar: AppBar(
         title: const Text('Meal Categories'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.shuffle),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const RandomMealScreen(),
-                ),
-              );
-            },
-          ),
-        ],
+  IconButton(
+    icon: const Icon(Icons.favorite),
+    onPressed: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => FavoritesScreen()),
+      );
+    },
+  ),
+  IconButton(
+    icon: const Icon(Icons.shuffle),
+    onPressed: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const RandomMealScreen()),
+      );
+    },
+  ),
+],
+
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -113,7 +125,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                           crossAxisCount: 2,
                           crossAxisSpacing: 8,
                           mainAxisSpacing: 8,
-                          childAspectRatio: 0.8,
+                          childAspectRatio: 0.60,
                         ),
                         itemCount: _filteredCategories.length,
                         itemBuilder: (context, index) {
